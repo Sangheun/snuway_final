@@ -1,0 +1,237 @@
+<head>
+<style>
+.map_wrap, .map_wrap * {margin:0;padding:0;font-size:12px;}
+.map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
+.map_wrap {position:relative;width:100%;height:500px;}
+#menu_wrap {position:absolute;top:0;left:0;bottom:0;width:180px;margin:10px 0 30px 10px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
+.bg_white {background:#fff;}
+#menu_wrap hr {display: block; height: 1px;border: 0; border-top: 2px solid #5F5F5F;margin:3px 0;}
+#menu_wrap .option{text-align: center;}
+#menu_wrap .option p {margin:10px 0;}
+#menu_wrap .option button {margin-left:5px;}
+#placesList li {list-style: none;}
+#placesList .item {position:relative;border-bottom:1px solid #888;overflow: hidden;cursor: pointer;min-height: 65px;}
+#placesList .item span {display: block;margin-top:4px;}
+#placesList .item h5, #placesList .item .info {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+#placesList .item .info{padding:10px 0 10px 55px;}
+#placesList .info .gray {color:#8a8a8a;}
+#placesList .info .jibun {padding-left:26px;background:url(http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;}
+#placesList .info .tel {color:#009900;}
+#placesList .item .markerbg {float:left;position:absolute;width:36px; height:37px;margin:10px 0 0 10px;background:url(http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;}
+#placesList .item .marker_1 {background-position: 0 -10px;}
+#placesList .item .marker_2 {background-position: 0 -56px;}
+#placesList .item .marker_3 {background-position: 0 -102px}
+#placesList .item .marker_4 {background-position: 0 -148px;}
+#placesList .item .marker_5 {background-position: 0 -194px;}
+#placesList .item .marker_6 {background-position: 0 -240px;}
+#placesList .item .marker_7 {background-position: 0 -286px;}
+#placesList .item .marker_8 {background-position: 0 -332px;}
+#placesList .item .marker_9 {background-position: 0 -378px;}
+#placesList .item .marker_10 {background-position: 0 -423px;}
+#placesList .item .marker_11 {background-position: 0 -470px;}
+#placesList .item .marker_12 {background-position: 0 -516px;}
+#placesList .item .marker_13 {background-position: 0 -562px;}
+#placesList .item .marker_14 {background-position: 0 -608px;}
+#placesList .item .marker_15 {background-position: 0 -654px;}
+#pagination {margin:10px auto;text-align: center;}
+#pagination a {display:inline-block;margin-right:10px;}
+#pagination .on {font-weight: bold; cursor: default;color:#777;}
+</style>
+</head>
+
+{% extends 'blog/base.html' %}
+
+{% load bootstrap3 %}
+
+
+{% load staticfiles %}
+
+{% block content %}
+
+<!-- 네비게이션 바 시작 -->
+<div id="page-top" class="index">
+    <nav id="mainNav" class="navbar navbar-default navbar-custom1 navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> 메뉴 <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="{% url 'blog:index' %}">스누웨이</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:index" %}">홈</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:lend" %}">빌려주기</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#lend_list">빌리기</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:my_page" user.id %}">마이페이지</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "logout" %}?next={{ request.path }}">로그아웃</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a class="page-scroll" href="{% url "login" %}?next={{ request.path }}">로그인</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "signup" %}">회원가입</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+</div>
+<!-- 네비게이션 바 끝 -->
+<section>
+<div class="container">
+<div class="row">
+<div class="col-sm-10 col-sm-offset-1">
+<div class="map_wrap">
+    <div id="map" style="width:100%;height:500px;position:relative;overflow:hidden;"></div>
+
+    <div id="menu_wrap" class="bg_white">
+        <div class="option">
+        <form method="get">
+            {% bootstrap_form form %}
+
+            <button class="btn btn-success btn-fill btn-sm" type="submit" >검색</button>
+</form>
+<p>
+<button class="btn btn-success btn-fill btn-sm" onclick="location.href='{% url 'blog:lend_list' %}';">검색 초기화</button>
+</p>
+<p>
+<button class="btn btn-success btn-fill btn-sm" onclick="setBounds()">지도 범위 재설정 하기</button>
+</p>
+
+</div>
+        </div>
+
+    </div>
+    </div>
+</div>
+</div>
+</section>
+
+<script type="text/javascript" src="//apis.daum.net/maps/maps3.js?apikey=492212d75d7c632d0c41684dc332b0b6"></script>
+<script>
+
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+    mapOption = {
+        center: new daum.maps.LatLng(37.4624015, 126.9520365), // 지도의 중심좌표
+        level: 7 // 지도의 확대 레벨
+
+    };
+
+var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+
+// 마커를 표시할 위치와 title 객체 배열입니다
+
+
+
+var positions = [
+    {% for lend in lend_list %}
+    {
+    latlng: new daum.maps.LatLng({{lend.lat}}, {{lend.lng}}),
+    content: '<div style="width:150px;text-align:center;padding:6px 0;"><p>제목: {{lend.title}}</p><p>대여자: {{lend.author.last_name}}{{lend.author.first_name}}</p><p>기기종류: {{lend.vehicle}}</p><p>지역: {{lend.location}}</p><p>가격: {{lend.price}}</p></div>'
+    },
+    {% endfor %}
+];
+
+
+
+
+var bounds = new daum.maps.LatLngBounds();
+
+
+
+// 마커 이미지의 이미지 주소입니다
+var i, marker, infowindow;
+
+for (i = 0; i < positions.length; i ++) {
+
+
+
+    // 마커를 생성합니다
+    marker = new daum.maps.Marker({
+        map: map,// 마커를 표시할 지도
+        position: positions[i].latlng // 마커를 표시할 위치
+
+    });
+
+
+    bounds.extend(positions[i].latlng);
+
+    var infowindow = new daum.maps.InfoWindow({
+        content: positions[i].content,
+        removable:true
+    });
+
+
+    daum.maps.event.addListener(marker, 'click', makeClickListener(map, marker, infowindow));
+
+    function makeClickListener(map, marker, infowindow){
+        return function(){
+            infowindow.open(map, marker);
+        };
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function setBounds(){
+    map.setBounds(bounds);
+}
+</script>
+
+
+</body>
+<script src="/static/jquery/jquery-1.10.2.js" type="text/javascript"></script>
+  <script src="/static/assets/js/jquery-ui-1.10.4.custom.min.js" type="text/javascript"></script>
+
+  <script src="/static/bootstrap3/js/bootstrap.js" type="text/javascript"></script>
+  <script src="/static/assets/js/gsdk-checkbox.js"></script>
+  <script src="/static/assets/js/gsdk-radio.js"></script>
+  <script src="/static/assets/js/gsdk-bootstrapswitch.js"></script>
+  <script src="/static/assets/js/get-shit-done.js"></script>
+
+    <script src="/static/assets/js/custom.js"></script>
+
+</html>
+
+
+
+
+
+{% endblock %}

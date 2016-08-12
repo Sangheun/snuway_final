@@ -1,0 +1,70 @@
+{% extends 'blog/base.html' %}
+{% load bootstrap3 %}
+{% block content %}
+<!-- 네비게이션 바 시작 -->
+<div id="page-top" class="index">
+    <nav id="mainNav" class="navbar navbar-default navbar-custom1 navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> 메뉴 <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="{% url "blog:index" %}">스누웨이</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:index" %}">홈</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#lend">빌려주기</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:lend_list" %}">빌리기</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:my_page" user.id %}">마이페이지</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "logout" %}?next={{ request.path }}">로그아웃</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a class="page-scroll" href="{% url "login" %}?next={{ request.path }}">로그인</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "signup" %}">회원가입</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+</div>
+<!-- 네비게이션 바 끝 -->
+
+<section>
+<div class="container">
+<div class="row">
+<div class='col-sm-6 col-sm-offset-3'>
+<form action="" method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <input class="btn btn-default" type="submit" value="로그인">
+    <input type="button" onclick="location.href='{% url 'signup' %}';" value="회원가입" class="btn btn-default">
+
+</form>
+</div>
+</div>
+</div>
+</section>
+{% endblock %}

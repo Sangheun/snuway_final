@@ -1,0 +1,62 @@
+{% extends "blog/base.html" %}
+
+
+
+
+{% block content %}
+
+
+
+<div class="col-sm-6 col-sm-offset-3">
+    <h1>{{ instance.title }}<small>{{instance.publish}}</small></h1>
+    <span>작성자: {{ instance.author }}</span>
+    {% if request.user == instance.author %}
+    <p><a href="{% url "blog:lend_edit" instance.id %}" class="btn btn-primary" role="button">수정하기</a></p>
+    {% endif %}
+<div id="map" style="width:500px;height:500px;"></div>
+<p><em></em></p>
+
+<script type="text/javascript" src="//apis.daum.net/maps/maps3.js?apikey=492212d75d7c632d0c41684dc332b0b6"></script>
+<script>
+var mapContainer = document.getElementById('map'), // 지도를 표시할 divd
+ mapOption = {
+
+     center: new daum.maps.LatLng({{instance.lat}}, {{instance.lng}}), // 지도의 중심좌표
+     level: 5 // 지도의 확대 레벨
+ };
+
+var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+// 마커가 표시될 위치입니다
+var markerPosition = new daum.maps.LatLng({{instance.lat}}, {{instance.lng}});
+
+// 마커를 생성합니다
+var marker = new daum.maps.Marker({
+ position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker.setMap(map);
+
+</script>
+    <p><div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="standard" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div></p>
+    <hr />
+
+<div class="row">
+<div class="col-sm-12">
+
+    <div class="post-detail-item"> {{instance.get_markdown}}
+    </div>
+    <hr />
+
+<div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div>
+
+</div>
+</div>
+</div>
+{% endblock content %}
+
+
+
+
+

@@ -1,0 +1,119 @@
+{% extends 'blog/base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="ko">
+
+
+<script>
+$('#myTab a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#myTab a[href="#account"]').tab('show')
+</script>
+
+<!-- 네비게이션 바 시작 -->
+<body id="page-top" class="index">
+    <nav id="mainNav" class="navbar navbar-default navbar-custom1 navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> 메뉴 <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="{% url "blog:index" %}">스누웨이</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:index" %}">홈</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:lend" %}">빌려주기</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "blog:lend_list" %}">빌리기</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a class="page-scroll" href="#my">마이페이지</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "logout" %}?next={{ request.path }}">로그아웃</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a class="page-scroll" href="{% url "login" %}?next={{ request.path }}">로그인</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="{% url "signup" %}">회원가입</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+</body>
+<!-- 네비게이션 바 끝 -->
+
+
+<!-- 상단 바와 내용 사이의 간격은 agency.min.css에서 @media (min-width:768px){section{padding:70px 0}} 부분을 수정하면 된다. -->
+
+
+<!-- 탭 메뉴 시작 -->
+<section id="my">
+    <div role="tabpanel">
+
+      <!-- Nav tabs -->
+        <div class="col-sm-3">
+            <ul class="nav nav-pills nav-stacked" role="tablist" id="myTab">
+                <li role="presentation" class="active"><a href="#account" aria-controls="account" role="tab" data-toggle="tab">회원 정보</a></li>
+                <li role="presentation"><a href="#booking" aria-controls="booking" role="tab" data-toggle="tab">예약 현황</a></li>
+                <li role="presentation"><a href="#profit" aria-controls="profit" role="tab" data-toggle="tab">거래 내역</a></li>
+            </ul>
+        </div>
+
+
+        <!-- Tab panes -->
+        <div class="tab-content col-sm-3">
+            <div role="tabpanel" class="tab-pane active" id="account">
+                <h1>회원정보</h1>
+                <h3>아이디 : {{user.username}}</h3>
+                <h3>이름 : {{user.last_name}}{{user.first_name}}</h3>
+                <h3>평점 : {{ratings.ratings}}</h3>
+                <ul>내가 게시한 글 <br />
+                {% for post in user_posts %}
+
+                    <a href="{% url "blog:lend_detail" post.id %}"><li>{{post.title}}</li></a>
+
+                {% endfor %}
+                </ul>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="booking">
+                    예약 현황
+            </div>
+            <div role="tabpanel" class="tab-pane" id="profit">
+                    거래 내역
+            </div>
+        </div>
+
+    </div>
+</section>
+<!-- 탭 메뉴 끝 -->
+
+
+</html>
+
+{% endblock %}
+
